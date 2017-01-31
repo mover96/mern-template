@@ -4,12 +4,22 @@ const webpack = require('webpack');
 const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('./webpack.config.js');
+const mongoose = require('mongoose');
+const configDB = require('./config/database');
 
 //TODO add router and mongo
 
 const isDeveloping = process.env.NODE_ENV !== 'production';
 const port = isDeveloping ? 3000 : process.env.PORT;
 const app = express();
+
+mongoose.connect(configDB.url);
+mongoose.connection.on('error', function(){
+  console.log('Error establishing database connecton: ' + error);
+});
+
+//importing routes
+var api = require('./routes/api');
 
 if (isDeveloping) {
   const compiler = webpack(config);
@@ -28,6 +38,9 @@ if (isDeveloping) {
 
   app.use(middleware);
   app.use(webpackHotMiddleware(compiler));
+
+  app.use('/api', api);
+
   app.get('*', function response(req, res) {
     res.write(middleware.fileSystem.readFileSync(path.join(__dirname, 'dist/index.html')));
     res.end();
