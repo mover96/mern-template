@@ -14,7 +14,7 @@ const app = express();
 //Mongoose connection
 mongoose.connect(configDB.url);
 mongoose.connection.on('error', function(){
-  console.log('Error establishing database connecton: ' + error);
+  console.log('Error establishing database connecton: ');
 });
 
 //Importing routes
